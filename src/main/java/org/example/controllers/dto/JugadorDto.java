@@ -1,6 +1,5 @@
 package org.example.controllers.dto;
 
-import org.example.entity.Equipo;
 import org.example.entity.Jugador;
 
 import javax.validation.constraints.NotBlank;

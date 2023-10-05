@@ -2,7 +2,7 @@ package org.example.controllers;
 
 import org.example.controllers.dto.EquipoDto;
 import org.example.entity.Equipo;
-import org.example.service.Service;
+import org.example.service.EquipoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 public class EquipoController {
 
     @Autowired
-    private Service service;
+    private EquipoService eqipoService;
 
     @GetMapping(path = "/equipos")
     public ResponseEntity<List<EquipoDto>> list() {
-        return ResponseEntity.ok(service.listEquipo()
+        return ResponseEntity.ok(eqipoService.listEquipo()
                 .stream()
                 .map(EquipoDto::toDto)
                 .collect(Collectors.toList())
@@ -32,7 +32,7 @@ public class EquipoController {
     @PostMapping(path = "/equipos")
     public ResponseEntity<Void> add(
             @Valid @RequestBody EquipoDto equipoDto
-    ) { if (service.addEquipo(equipoDto.toEntity(equipoDto))) {
+    ) { if (eqipoService.addEquipo(equipoDto.toEntity(equipoDto))) {
         return ResponseEntity.ok().build();
     } else {
         return ResponseEntity.status(HttpStatus.CONFLICT).build();
@@ -44,12 +44,12 @@ public class EquipoController {
             @PathVariable("equipoId") int equipoId,
             @Valid @RequestBody EquipoDto equipo
     ) {
-        Equipo s = service.updateEquipo(equipoId);
+        Equipo s = eqipoService.findEquipo(equipoId);
         if (s != null) {
             s.setId(equipo.getId());
             s.setNombre(equipo.getNombre());
             s.setCiudad(equipo.getCiudad());
-            service.addEquipo(s);
+            eqipoService.addEquipo(s);
             return ResponseEntity.ok().body(s);
         } else {
             return ResponseEntity.notFound().build();
@@ -59,7 +59,7 @@ public class EquipoController {
     @DeleteMapping(path = "/equipos/{equipoId}")
     public ResponseEntity<Void> delete(
             @PathVariable("equipoId") int equipoId) {
-        if (service.deleteEquipo(equipoId)) {
+        if (eqipoService.deleteEquipo(equipoId)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

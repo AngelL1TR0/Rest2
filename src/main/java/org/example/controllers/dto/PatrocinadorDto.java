@@ -1,8 +1,5 @@
 package org.example.controllers.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.example.entity.Patrocinador;
 
 import javax.validation.constraints.NotBlank;
