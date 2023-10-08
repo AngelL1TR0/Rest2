@@ -14,52 +14,43 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@RequestMapping("/equipos")
 public class EquipoController {
 
     @Autowired
-    private EquipoService eqipoService;
+    private EquipoService service;
 
-    @GetMapping(path = "/equipos")
-    public ResponseEntity<List<EquipoDto>> list() {
-        return ResponseEntity.ok(eqipoService.listEquipo()
-                .stream()
-                .map(EquipoDto::toDto)
-                .collect(Collectors.toList())
-        );
+    @GetMapping
+    public ResponseEntity<List<EquipoDto>> listEquipos() {
+        return ResponseEntity.ok(service.listEquipos());
     }
 
-
-    @PostMapping(path = "/equipos")
-    public ResponseEntity<Void> add(
-            @Valid @RequestBody EquipoDto equipoDto
-    ) { if (eqipoService.addEquipo(equipoDto.toEntity(equipoDto))) {
-        return ResponseEntity.ok().build();
-    } else {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    }
+    @PostMapping
+    public ResponseEntity<Void> addEquipo(@Valid @RequestBody EquipoDto equipoDto) {
+        if (service.addEquipo(equipoDto)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
-    @PutMapping(path = "/equipos/{equipoId}")
-    public ResponseEntity<Equipo> update(
+    @PutMapping("/{equipoId}")
+    public ResponseEntity<Equipo> updateEquipo(
             @PathVariable("equipoId") int equipoId,
-            @Valid @RequestBody EquipoDto equipo
+            @Valid @RequestBody EquipoDto equipoDto
     ) {
-        Equipo s = eqipoService.findEquipo(equipoId);
-        if (s != null) {
-            s.setId(equipo.getId());
-            s.setNombre(equipo.getNombre());
-            s.setCiudad(equipo.getCiudad());
-            eqipoService.addEquipo(s);
-            return ResponseEntity.ok().body(s);
+        Equipo equipo = service.findEquipo(equipoId);
+        if (equipo != null) {
+            service.updateEquipo(equipo, equipoDto);
+            return ResponseEntity.ok(equipo);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping(path = "/equipos/{equipoId}")
-    public ResponseEntity<Void> delete(
-            @PathVariable("equipoId") int equipoId) {
-        if (eqipoService.deleteEquipo(equipoId)) {
+    @DeleteMapping("/{equipoId}")
+    public ResponseEntity<Void> deleteEquipo(@PathVariable("equipoId") int equipoId) {
+        if (service.deleteEquipo(equipoId)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

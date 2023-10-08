@@ -1,27 +1,29 @@
 package org.example.service;
 
+import org.example.controllers.dto.JugadorEquipoDto;
+import org.example.dao.JugadorDAO;
+import org.example.entity.Jugador;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
 @org.springframework.stereotype.Service
 public class Service {
-    private EquipoService equipoService;
+
+    @Autowired
+    private JugadorDAO jugadorDAO;
+
     private JugadorService jugadorService;
-    private PatrocinadorService patrocinadorService;
+    private EquipoService equipoService;
 
-    public Service(EquipoService equipoService, JugadorService jugadorService, PatrocinadorService patrocinadorService) {
-        this.equipoService = equipoService;
-        this.jugadorService = jugadorService;
-        this.patrocinadorService = patrocinadorService;
-    }
 
-    public EquipoService getEquipoService() {
-        return equipoService;
-    }
+    public List<JugadorEquipoDto> getJugadorEquipo() {
+        List<Jugador> jugadores = jugadorDAO.findAll();
 
-    public JugadorService getJugadorService() {
-        return jugadorService;
-    }
 
-    public PatrocinadorService getPatrocinadorService() {
-        return patrocinadorService;
+
+        return jugadores.stream().map(jugador -> JugadorEquipoDto.toDto(jugador, jugador.getIdEquipo())).collect(Collectors.toList());
     }
 }
 

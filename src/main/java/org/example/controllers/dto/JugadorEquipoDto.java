@@ -110,12 +110,4 @@ public class JugadorEquipoDto implements Serializable {
         jugador.setIdEquipo(equipo);
         return jugador;
     }
-
-    public static Equipo toEntityEquipo(JugadorEquipoDto dto) {
-        Equipo equipo = new Equipo();
-        equipo.setId(dto.getEquipoId());
-        equipo.setNombre(dto.getEquipoNombre());
-        equipo.setCiudad(dto.getEquipoCiudad());
-        return equipo;
-    }
 }

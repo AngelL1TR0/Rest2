@@ -12,50 +12,43 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 @RestController
+@RequestMapping("/patrocinadores")
 public class PatrocinadorController {
 
     @Autowired
-    private PatrocinadorService patrocinadorService;
-    @GetMapping(path = "/patrocinadores")
-    public ResponseEntity<List<PatrocinadorDto>> list() {
-        return ResponseEntity.ok(patrocinadorService.listPatrocinador()
-                .stream()
-                .map(PatrocinadorDto::toDto)
-                .collect(Collectors.toList())
-        );
+    private PatrocinadorService service;
+
+    @GetMapping
+    public ResponseEntity<List<PatrocinadorDto>> listPatrocinadores() {
+        return ResponseEntity.ok(service.listPatrocinador());
     }
 
-
-    @PostMapping(path = "/patrocinadores")
-    public ResponseEntity<Void> add(
-            @Valid @RequestBody PatrocinadorDto patrocinadorDto
-    ) { if (patrocinadorService.addPatrocinador(patrocinadorDto.toEntity(patrocinadorDto))) {
-        return ResponseEntity.ok().build();
-    } else {
-        return ResponseEntity.status(HttpStatus.CONFLICT).build();
-    }
+    @PostMapping
+    public ResponseEntity<Void> addPatrocinador(@Valid @RequestBody PatrocinadorDto patrocinadorDto) {
+        if (service.addPatrocinador(patrocinadorDto)) {
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
     }
 
-    @PutMapping(path = "/patrocinadores/{patrocinadorId}")
-    public ResponseEntity<Patrocinador> update(
+    @PutMapping("/{patrocinadorId}")
+    public ResponseEntity<Patrocinador> updatePatrocinador(
             @PathVariable("patrocinadorId") int patrocinadorId,
-            @Valid @RequestBody PatrocinadorDto patrocinador
+            @Valid @RequestBody PatrocinadorDto patrocinadorDto
     ) {
-        Patrocinador s = patrocinadorService.findPatrocinador(patrocinadorId);
-        if (s != null) {
-            s.setId(patrocinador.getId());
-            s.setNombre(patrocinador.getNombre());
-            patrocinadorService.addPatrocinador(s);
-            return ResponseEntity.ok().body(s);
+        Patrocinador patrocinador = service.findPatrocinador(patrocinadorId);
+        if (patrocinador != null) {
+            service.updatePatrocinador(patrocinador, patrocinadorDto);
+            return ResponseEntity.ok(patrocinador);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @DeleteMapping(path = "/patrocinadores/{patrocinadorId}")
-    public ResponseEntity<Void> delete(
-            @PathVariable("patrocinadorId") int patrocinadorId) {
-        if (patrocinadorService.deletePatrocinador(patrocinadorId)) {
+    @DeleteMapping("/{patrocinadorId}")
+    public ResponseEntity<Void> deletePatrocinador(@PathVariable("patrocinadorId") int patrocinadorId) {
+        if (service.deletePatrocinador(patrocinadorId)) {
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();
